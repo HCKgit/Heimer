@@ -18,6 +18,7 @@
 #include "editor_data.hpp"
 #include "editor_scene.hpp"
 #include "editor_view.hpp"
+#include "image_manager.hpp"
 #include "main_window.hpp"
 #include "mediator.hpp"
 #include "png_export_dialog.hpp"
@@ -108,6 +109,7 @@ void Application::parseArgs(int argc, char ** argv)
 
 Application::Application(int & argc, char ** argv)
     : m_app(argc, argv)
+    , m_imageManager(new ImageManager)
     , m_stateMachine(new StateMachine)
 {
     parseArgs(argc, argv);
@@ -164,15 +166,6 @@ QString Application::getFileDialogFileText() const
     return tr("Heimer Files") + " (*" + Constants::Application::FILE_EXTENSION + ")";
 }
 
-QString Application::loadRecentPath() const
-{
-    QSettings settings;
-    settings.beginGroup(m_settingsGroup);
-    const auto path = settings.value("recentPath", QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).toString();
-    settings.endGroup();
-    return path;
-}
-
 int Application::run()
 {
     return m_app.exec();
@@ -205,6 +198,9 @@ void Application::runState(StateMachine::State state)
         break;
     case StateMachine::State::ShowEdgeColorDialog:
         showEdgeColorDialog();
+        break;
+    case StateMachine::State::ShowImageFileDialog:
+        showImageFileDialog();
         break;
     case StateMachine::State::ShowPngExportDialog:
         showPngExportDialog();
@@ -322,11 +318,37 @@ void Application::saveMindMapAs()
     }
 }
 
-void Application::saveRecentPath(QString fileName)
+QString Application::loadRecentPath() const
 {
     QSettings settings;
     settings.beginGroup(m_settingsGroup);
-    settings.setValue("recentPath", fileName);
+    const auto path = settings.value("recentPath", QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).toString();
+    settings.endGroup();
+    return path;
+}
+
+void Application::saveRecentPath(QString path)
+{
+    QSettings settings;
+    settings.beginGroup(m_settingsGroup);
+    settings.setValue("recentPath", path);
+    settings.endGroup();
+}
+
+QString Application::loadRecentImagePath() const
+{
+    QSettings settings;
+    settings.beginGroup(m_settingsGroup);
+    const QString path = settings.value("recentImagePath", QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).toString();
+    settings.endGroup();
+    return path;
+}
+
+void Application::saveRecentImagePath(QString path)
+{
+    QSettings settings;
+    settings.beginGroup(m_settingsGroup);
+    settings.setValue("recentImagePath", path);
     settings.endGroup();
 }
 
@@ -346,6 +368,25 @@ void Application::showEdgeColorDialog()
         m_mediator->setEdgeColor(color);
     }
     emit actionTriggered(StateMachine::Action::EdgeColorChanged);
+}
+
+void Application::showImageFileDialog()
+{
+    const auto path = loadRecentImagePath();
+    const auto extensions = "(*.jpg *.jpeg *.JPG *.JPEG *.png *.PNG)";
+    const auto fileName = QFileDialog::getOpenFileName(
+        m_mainWindow.get(), tr("Open an image"), path, tr("Image Files") + " " + extensions);
+
+    QImage qImage;
+    if (qImage.load(fileName))
+    {
+        const Image image{qImage, fileName.toStdString()};
+        m_imageManager->addImage(image);
+    }
+    else if (fileName != "")
+    {
+        QMessageBox::critical(m_mainWindow.get(), tr("Load image"), tr("Failed to load image '") + fileName + "'");
+    }
 }
 
 void Application::showPngExportDialog()

@@ -78,6 +78,10 @@ public:
 
     virtual void setText(const QString & text);
 
+    virtual int imageRef() const;
+
+    virtual void setImageRef(int imageRef);
+
 private:
 
     QColor m_color = Qt::white;
@@ -97,6 +101,8 @@ private:
     bool m_selected = false;
 
     int m_index = -1;
+
+    int m_imageRef = -1;
 };
 
 using NodeBasePtr = std::shared_ptr<NodeBase>;

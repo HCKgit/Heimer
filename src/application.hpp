@@ -28,6 +28,7 @@
 class EditorData;
 class EditorScene;
 class EditorView;
+class ImageManager;
 class MainWindow;
 class Mediator;
 class PngExportDialog;
@@ -60,6 +61,8 @@ private:
 
     QString getFileDialogFileText() const;
 
+    QString loadRecentImagePath() const;
+
     QString loadRecentPath() const;
 
     void openArgMindMap();
@@ -70,11 +73,15 @@ private:
 
     void saveMindMapAs();
 
+    void saveRecentImagePath(QString fileName);
+
     void saveRecentPath(QString fileName);
 
     void showBackgroundColorDialog();
 
     void showEdgeColorDialog();
+
+    void showImageFileDialog();
 
     void showPngExportDialog();
 
@@ -95,6 +102,8 @@ private:
     QString m_lang;
 
     QString m_settingsGroup = "Application";
+
+    std::unique_ptr<ImageManager> m_imageManager;
 
     std::unique_ptr<StateMachine> m_stateMachine;
 

@@ -77,6 +77,8 @@ Node::Node(const Node & other)
 
     setCornerRadius(other.cornerRadius());
 
+    setImageRef(other.imageRef());
+
     setIndex(other.index());
 
     setLocation(other.location());
