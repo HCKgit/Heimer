@@ -31,6 +31,7 @@ class EditorView;
 class ImageManager;
 class MainWindow;
 class Mediator;
+class Node;
 class PngExportDialog;
 
 class Application : public QObject
@@ -116,6 +117,8 @@ private:
     std::shared_ptr<EditorScene> m_editorScene;
 
     EditorView * m_editorView = nullptr;
+
+    Node * m_actionNode = nullptr;
 
     std::unique_ptr<PngExportDialog> m_pngExportDialog;
 };

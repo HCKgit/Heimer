@@ -134,7 +134,10 @@ Application::Application(int & argc, char ** argv)
 
     // Connect views and StateMachine together
     connect(this, &Application::actionTriggered, m_stateMachine.get(), &StateMachine::calculateState);
-    connect(m_editorView, &EditorView::actionTriggered, m_stateMachine.get(), &StateMachine::calculateState);
+    connect(m_editorView, &EditorView::actionTriggered, [this] (StateMachine::Action action, Node * node) {
+        m_actionNode = node;
+        m_stateMachine->calculateState(action);
+    });
     connect(m_mainWindow.get(), &MainWindow::actionTriggered, m_stateMachine.get(), &StateMachine::calculateState);
     connect(m_stateMachine.get(), &StateMachine::stateChanged, this, &Application::runState);
 
@@ -381,7 +384,13 @@ void Application::showImageFileDialog()
     if (qImage.load(fileName))
     {
         const Image image{qImage, fileName.toStdString()};
-        m_imageManager->addImage(image);
+        auto id = m_imageManager->addImage(image);
+        if (m_actionNode)
+        {
+            juzzlin::L().info() << "Setting image id=" << id << " to node " << m_actionNode->index();
+            m_actionNode->setImageRef(id);
+            m_actionNode = nullptr;
+        }
     }
     else if (fileName != "")
     {

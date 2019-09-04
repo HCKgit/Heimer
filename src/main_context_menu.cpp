@@ -102,7 +102,7 @@ MainContextMenu::MainContextMenu(QWidget * parent, Mediator & mediator, Grid & g
 
     auto attachImageAction(new QAction(tr("Attach image..."), this));
     QObject::connect(attachImageAction, &QAction::triggered, [this] {
-        emit actionTriggered(StateMachine::Action::ImageAttachmentRequested);
+        emit actionTriggered(StateMachine::Action::ImageAttachmentRequested, m_selectedNode);
     });
 
     m_mainContextMenuActions[Mode::Node].push_back(deleteNodeAction);
