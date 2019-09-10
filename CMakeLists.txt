@@ -81,6 +81,14 @@ set(BINARY_NAME "heimer")
 
 add_definitions(-DVERSION="${VERSION}")
 
+# HCK - Added as could not find better place to set these env vars.
+set(Qt5_DIR "C:\\Qt\\Qt5.13.0\\5.13.0\\msvc2017_64\\lib\\cmake")
+set(Qt5Core_DIR ${Qt5_DIR}/Qt5Core)
+set(Qt5Xml_DIR ${Qt5_DIR}/Qt5Xml)
+set(Qt5Widgets_DIR ${Qt5_DIR}/Qt5Widgets)
+set(Qt5LinguistTools_DIR ${Qt5_DIR}/Qt5LinguistTools)
+set(Qt5Test_DIR ${Qt5_DIR}/Qt5Test)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(QT_MIN_VER 5.5.1) # The version in Ubuntu 16.04
